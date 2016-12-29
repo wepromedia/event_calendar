@@ -7,11 +7,11 @@
                 $(this).attr("data-calendar-id",id);
                 $(this).attr("id","calendar_id_"+id);
                 var options = $.extend( {
-                    'api' : './calendar.json',
+                    'api' : ['./json/calendar.json'],
                     'week': ["日","月","火","水","木","金","土"],
                     'width':"100%",
                     'target_obj':false,
-                    'calender_icon':false,
+                    'calender_icon':true,
                     'target_click':true,
                     'id':id
                 }, opt);
@@ -81,22 +81,7 @@
         }
     };
     var optionBindEvent = function($this,options){
-        if(options.target_obj && options.target_click){
-            $(document).on("focus",options.target_obj,function(){
-                methods.open($this);
-            });
-        }
-        if(options.calender_icon){
-            $(document).on("click","#calendar_id_"+options.id+" .event_calendar_icon",function(evt){
-                if($(this).hasClass("on")){
-                    methods.close($(this).parent());
-                }else{
-                    methods.open($(this).parent());
-                }
-            });
-        }
-
-        $(document).on('click', function(evt){
+        $(document).on('mousedown', function(evt){
             if($this.find(".event_calendar_container").hasClass("open") == false){
                 return true;
             }
@@ -113,6 +98,23 @@
                 methods.close($this);
             }
         });
+
+        if(options.target_obj && options.target_click){
+            $(document).on("focus",options.target_obj,function(){
+                methods.open($this);
+            });
+        }
+        if(options.calender_icon){
+            $(document).on("mouseup","#calendar_id_"+options.id+" .event_calendar_icon",function(evt){
+                if($(this).hasClass("on")){
+                    methods.close($(this).parent());
+                }else{
+                    methods.open($(this).parent());
+                }
+            });
+        }
+
+
 
     };
     /*--------------------------------------------------
@@ -213,44 +215,50 @@
         var $obj = $(obj);
         var month = date.getMonth()+1;
         var data = {"date":date.getFullYear() +"-" + ( '00' + month ).slice( -2 )};
-        $.ajax({
-            url: options.api,
-            type: "post",
-            data: data,
-            timeout: 10000,
-            dataType: "json",
-            success: function(result, textStatus, xhr) {
-                if(result.length > 0){
-                    $.each(result,function(e,v){
-                        if(v.date == undefined || v.title == undefined){
-                            return true;
-                        }
-                        var day = new Date(v.date);
-                        var mon = day.getMonth()+1;
-                        var dy = day.getDate();
-                        var check_date = day.getFullYear() +"-" + ( '00' + mon ).slice( -2 ) + "-" + ( '00' + dy ).slice( -2 );
-                        if($obj.find("td[data-calendar_date='"+check_date+"'] .calendar_event").length == 0){
-                            return true;
-                        }
-                        var html = '<span class="event_icon"></span>';
-                        $obj.find("td[data-calendar_date='"+check_date+"'] .calendar_event").append(html);
-                        if($obj.find(".event_calendar_result .calendar_event_detail[data-calendar_date='"+check_date+"']").length == 0){
-                            $obj.find(".event_calendar_result").append('<div class="calendar_event_detail" data-calendar_date="'+check_date+'"><ul></ul></div>');
-                        }
-                        if(v.time == undefined){
-                            var date_set = v.date;
-                        }else{
-                            var date_set = v.date + " " + v.time;
-                        }
-                        var html = '<li><div class="event_date">'+ date_set + '</div><div class="event_title">' + v.title +'</div></li>';
-                        $obj.find(".calendar_event_detail[data-calendar_date='"+check_date+"'] ul").append(html);
-                    });
+        if(!Array.isArray(options.api)){
+            options.api = [options.api];
+        }
+        $.each(options.api,function(key,url){
+            $.ajax({
+                url: url,
+                type: "post",
+                data: data,
+                timeout: 10000,
+                dataType: "json",
+                success: function(result, textStatus, xhr) {
+                    if(result.length > 0){
+                        $.each(result,function(e,v){
+                            if(v.date == undefined || v.title == undefined){
+                                return true;
+                            }
+                            var day = new Date(v.date);
+                            var mon = day.getMonth()+1;
+                            var dy = day.getDate();
+                            var check_date = day.getFullYear() +"-" + ( '00' + mon ).slice( -2 ) + "-" + ( '00' + dy ).slice( -2 );
+                            if($obj.find("td[data-calendar_date='"+check_date+"'] .calendar_event").length == 0){
+                                return true;
+                            }
+                            var html = '<span class="event_icon"></span>';
+                            $obj.find("td[data-calendar_date='"+check_date+"'] .calendar_event").append(html);
+                            if($obj.find(".event_calendar_result .calendar_event_detail[data-calendar_date='"+check_date+"']").length == 0){
+                                $obj.find(".event_calendar_result").append('<div class="calendar_event_detail" data-calendar_date="'+check_date+'"><ul></ul></div>');
+                            }
+                            if(v.time == undefined){
+                                var date_set = v.date;
+                            }else{
+                                var date_set = v.date + " " + v.time;
+                            }
+                            var html = '<li><div class="event_date">'+ date_set + '</div><div class="event_title">' + v.title +'</div></li>';
+                            $obj.find(".calendar_event_detail[data-calendar_date='"+check_date+"'] ul").append(html);
+                        });
+                    }
+                },
+                error: function(xhr, textStatus, error) {
+                    console.log(result);
                 }
-            },
-            error: function(xhr, textStatus, error) {
-                console.log(result);
-            }
+            });
         });
+
     };
     /*--------------------------------------------------
      カレンダーのマウスイベント - 月移動

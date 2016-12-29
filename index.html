@@ -15,11 +15,11 @@
 
 </head>
 <body>
-
-<h2>フォームに設置</h2>
-<div class="comment">
-    inputタグやtextareaに対して、カレンダーを設置する事が可能です。
+<h2>ただ単に作成した場合</h2>
+<div>
+    <div id="calendar"></div>
 </div>
+<h2>フォームに設置</h2>
 <div>
     <input type="text" name="release_date_day" value="2016-12-22">
     <div class="calendar"></div>
@@ -39,6 +39,13 @@
 <h2>週を表記を変更した時</h2>
 <div>
     <div class="calendar5"></div>
+</div>
+<h2>外部メソッド</h2>
+<div>
+    <input type="text" name="release_date_day2" value="2016-12-22">
+    <a href="javascript:void(0);" class="open">open</a>
+    <a href="javascript:void(0);" class="close">close</a>
+    <div class="calendar6"></div>
 </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -61,6 +68,19 @@
     $(".calendar5").eventCalendar({
         'calender_icon':true,
         'week': ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
+    });
+
+    $("#calendar").eventCalendar();
+
+    $(".calendar6").eventCalendar({
+        'calender_icon':false,
+        "target_obj":"input[name='release_date_day2']"
+    });
+    $(".open").on("click",function(evt){
+        $(".calendar6").eventCalendar("open");
+    });
+    $(".close").on("click",function(evt){
+        $(".calendar6").eventCalendar("close");
     });
 </script>
 
