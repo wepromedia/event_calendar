@@ -269,7 +269,7 @@
                     }
                 },
                 error: function(xhr, textStatus, error) {
-                    console.log(result);
+                    console.log(url+"の読み込みに失敗しました。イベントファイルとのパスを再度確認してください。");
                 }
             });
         });
