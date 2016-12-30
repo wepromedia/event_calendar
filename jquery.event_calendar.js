@@ -10,9 +10,11 @@
                     'api' : ['./json/calendar.json'],
                     'week': ["日","月","火","水","木","金","土"],
                     'width':"100%",
+                    'thema':"calendar_default",
                     'target_obj':false,
                     'calender_icon':true,
                     'target_click':true,
+                    'title_format':"YYYY/MM",
                     'id':id
                 }, opt);
                 var $this = $(this),
@@ -113,15 +115,13 @@
                 }
             });
         }
-
-
-
     };
     /*--------------------------------------------------
      Calendar Container Create - カレンダーのベースを作成する
      --------------------------------------------------*/
     var createCalendarContainer = function(obj,options){
         var $obj = $(obj);
+        $obj.addClass(options.thema);
         if(options.calender_icon){
             $obj.append('<a href="javascript:void(0);" class="event_calendar_icon"></a>');
         }
@@ -129,16 +129,18 @@
         html += '<div class="event_calendar_bg"></div>';
         html += '<div class="event_calendar_container_inner">';
         html += '<div class="event_calendar_header">';
+        html += '<div class="event_calendar_header_inner">';
         html += '<div class="event_calendar_header_prev_btn"><a href="javascript:void(0);">&lt;</a></div>';//prev
         html += '<div class="event_calendar_header_title">2016年12月</div>';//title
         html += '<div class="event_calendar_header_next_btn"><a href="javascript:void(0);">&gt;</a></div>';//next
+        html += '</div>';
         html += '</div>';
         html += '<div class="event_calendar_body">';
         html += '<table class="event_calendar_table">';
         html += '</table>';
         html += '</div>';
         html += '<div class="event_calendar_result"></div>';
-        html += '<div class="copyright">Event Calendar by Wepromedia Original</div>';
+        html += '<div class="copyright"><a href="https://wepromedia.net/">Event Calendar by Wepromedia Original</a></div>';
         html += '</div></div>';
         $obj.append(html);
         $obj.find(".event_calendar_container_inner").css({"width":options.width});
@@ -189,13 +191,20 @@
         }
         methods.setOption({"now_month":format_month},obj);
 
-        $obj.find(".event_calendar_header_title").html(format_month);
+        //表示フォーマットに合わせて出力
+        var format_date = _title_format(year,( '00' + month ).slice( -2 ),options.title_format);
+        $obj.find(".event_calendar_header_title").html(format_date);
         $obj.find(".event_calendar_table").empty();
         $obj.find(".event_calendar_result").empty();
         $obj.find(".event_calendar_table").append(html);
         getEventList(obj,options,date);
         $obj.find(".event_calendar_container").fadeIn();
     };
+    var _title_format = function(year,month,format) {//TDの中身
+        var tmp = format.split(/YYYY|MM/);
+        return year + tmp[1] + month + tmp[2];
+    };
+
     var createTableTd = function(count_date,format_month,options){//TDの中身
         var format_date = format_month + "-" + ( '00' + count_date ).slice( -2 );
         if(options.target_obj){
@@ -203,6 +212,9 @@
             if(get_contents == format_date){
                 var tmp = "now";
             }
+        }
+        if(tmp == undefined){
+            tmp = "";
         }
 
         var td = '<td data-calendar_date="'+format_date+'" class="'+tmp+'"><div class="calendar_date">'+count_date+'</div><div class="calendar_event"></div></td>';
@@ -237,6 +249,9 @@
                             var check_date = day.getFullYear() +"-" + ( '00' + mon ).slice( -2 ) + "-" + ( '00' + dy ).slice( -2 );
                             if($obj.find("td[data-calendar_date='"+check_date+"'] .calendar_event").length == 0){
                                 return true;
+                            }
+                            if($obj.find("td[data-calendar_date='"+check_date+"']").hasClass("event_on") == false){
+                                $obj.find("td[data-calendar_date='"+check_date+"']").addClass("event_on");
                             }
                             var html = '<span class="event_icon"></span>';
                             $obj.find("td[data-calendar_date='"+check_date+"'] .calendar_event").append(html);
