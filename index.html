@@ -11,32 +11,42 @@
   <body>
     <h1>Event Calendar Demo</h1>
     <h2> 通常の設置 </h2>
+    <input type="text" name="sample1" value="2016-12-30">
     <div class="calendar"></div>
     <h2> 別デザイン（light） </h2>
+    <input type="text" name="sample2" value="2016-12-24">
     <div class="calendar2"></div>
     <h2> 別デザイン（calendar_modern） </h2>
+    <input type="text" name="sample3" value="2016-12-24">
     <div class="calendar3"></div>
     <h2> 別デザイン（calendar_sky） </h2>
-    <input type="text" name="sample4" value="2016-12-30">
+    <input type="text" name="sample4" value="2016-12-24">
     <div class="calendar4"></div>
+    <h2> 別デザイン（calendar_sky） </h2>
+    <a href="javascript:void(0);" class="open">Open</a>
+    <a href="javascript:void(0);" class="close">close</a>
+    <div class="demo_8"></div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="./jquery.event_calendar.min.js" type="text/javascript"></script>
     <script>
       $(".calendar").eventCalendar(
       {
-        "width": "500px"
+        "width": "500px",
+        'target_obj': 'input[name="sample1"]'
       });
       $(".calendar2").eventCalendar(
       {
         "width": "500px",
         "thema": "calendar_light",
-        'week': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-      });
+        'week': ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        'target_obj': 'input[name="sample2"]'
+      }).eventCalendar("open");
       $(".calendar3").eventCalendar(
       {
         "width": "500px",
         "thema": "calendar_modern",
-        'week': ["#Sun", "#Mon", "#Tue", "#Wed", "#Thu", "#Fri", "#Sat"]
+        'week': ["#Sun", "#Mon", "#Tue", "#Wed", "#Thu", "#Fri", "#Sat"],
+        'target_obj': 'input[name="sample3"]'
       });
       $(".calendar4").eventCalendar(
       {
@@ -44,6 +54,19 @@
         "thema": "calendar_sky",
         'week': ["su", "mo", "tu", "we", "th", "fr", "sa"],
         'target_obj': 'input[name="sample4"]'
+      });
+      $(".demo_8").eventCalendar(
+      {
+        "api": "/common/lib/event_calendar/json/calendar.json",
+        'calender_icon': false
+      });
+      $(".open").on("click", function(evt)
+      {
+        $(".demo_8").eventCalendar("open");
+      });
+      $(".close").on("click", function(evt)
+      {
+        $(".demo_8").eventCalendar("close");
       });
     </script>
   </body>
